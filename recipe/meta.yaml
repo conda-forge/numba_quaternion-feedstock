@@ -1,43 +1,51 @@
 {% set name = "numba_quaternion" %}
-{% set version = "0.2.0" %}
-
+{% set version = "0.3.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/numba_quaternion-{{ version }}.tar.gz
-  sha256: 6860810527b186850999aa022240d614f27018cea07d23856d08a6cc22a6b17e
+  url: https://pypi.org/packages/source/n/numba-quaternion/numba_quaternion-{{ version }}.tar.gz
+  sha256: c2054ab7a2e4103763832861542ede6654b49918430942b10232b6a9ee95c312
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
   host:
+    - python {{ python_min }}
     - pip
-    - python >=3.8
-    - poetry >=1,<2
+    - uv-build >=0.9,<0.13
   run:
-    - numba >=0.52
-    - numpy >=1,<2
-    - python >=3.8
+    - python >={{ python_min }}
+    - numba >=0.59
+    - numpy >=1.23
+    # numba needs scipy for linear algebra in jitted code
+    - scipy >=1.10
 
 test:
+  source_files:
+    - tests
   imports:
     - numba_quaternion
   commands:
     - pip check
+    - pytest tests -v
   requires:
+    - python {{ python_min }}
     - pip
+    - pytest
 
 about:
-  home: https://github.com/ickc/numba_quaternion
-  summary: Some convenience functions for Cosmology-related analysis.
+  home: https://github.com/ickc/python-numba_quaternion
+  summary: Quaternion operations that can be used within Numba-jit functions.
   license: BSD-3-Clause
   license_file: LICENSE
+  doc_url: https://ickc.github.io/python-numba_quaternion
+  dev_url: https://github.com/ickc/python-numba_quaternion
 
 extra:
   recipe-maintainers:
